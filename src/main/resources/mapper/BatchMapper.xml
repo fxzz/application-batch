@@ -2,16 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="com.example.appbatch.batch.BatchMapper">
+    <resultMap id="likesResultMap" type="com.example.appbatch.batch.LikesDto">
+        <id column="likesId" property="likesId"></id>
+        <result column="communityId" property="communityId"/>
+    </resultMap>
 
+    <select id="selectLikesAllWithStatus" parameterType="java.util.Map" resultMap="likesResultMap">
+        SELECT likesId, communityId
+        FROM likes
+        WHERE batch_status = #{status}
+        LIMIT #{_pagesize} OFFSET #{_skiprows}
+    </select>
 
-    <insert id="insertCommunities" parameterType="java.util.List">
-        INSERT INTO community (title, content, accountId)
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-            (#{item.title}, #{item.content}, #{item.accountId})
-        </foreach>
-    </insert>
+    <update id="updateLikesCount" parameterType="java.util.Map">
+        UPDATE community
+        SET likes = likes + 1
+        WHERE communityId = #{communityId}
+    </update>
 
-
-
+    <update id="updateLikesBatchStatus" parameterType="java.util.Map">
+        UPDATE likes
+        SET batch_status = TRUE
+        WHERE likesId = #{likesId}
+    </update>
 </mapper>
