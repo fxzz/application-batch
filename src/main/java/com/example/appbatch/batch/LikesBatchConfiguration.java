@@ -50,6 +50,9 @@ public class LikesBatchConfiguration {
                 .<LikesDto, LikesDto>chunk(CHUNK_SIZE)
                 .reader(likesWithStatusFalseReader())
                 .writer(compositeItemWriter())
+                .faultTolerant()         // Retry 기능을 활성화
+                .retryLimit(3)           // 최대 재시도 횟수
+                .retry(Exception.class)  // 재시도할 예외 지정
                 .build();
     }
 
